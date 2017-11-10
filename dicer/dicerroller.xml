@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WindbotSettings>
+    <Healer>
+        <SpellHealer enabled="no"/>
+        <PotionHealer enabled="no"/>
+        <ConditionHealer enabled="no"/>
+        <ManaTrainer manaTrainCondition="Mana Percent above" manaTrainMin="87" manaTrainMax="93" enabled="no"/>
+    </Healer>
+    <Scripter>
+        <HotkeyScripts/>
+        <PersistentScripts>
+            <PersistentScript name="RollDice" script="init start&#10;canroll = false&#10;rolling = false&#10;function rolldie()&#10;rolling = true&#10;local idkostki&#10;for i=5792,5797 do&#10;if itemcount(i,$back.id) == 1 then&#10;idkostki = i&#10;end&#10;end&#10;useitem(idkostki)&#10;wait(300)&#10;local idkostkiporolowaniu&#10;for i=5792,5797 do&#10;if itemcount(i,$back.id) == 1 then&#10;idkostkiporolowaniu = (i-5791)&#10;end&#10;end&#10;rolling = false&#10;return idkostkiporolowaniu&#10;end&#10;&#10;&#10;&#10;&#10;numerrozmowy = 0&#10;&#9;function navmessages(msg)&#10;&#9;if msg.charname ~= $name then&#10;&#9;--print(msg)&#10;&#9;&#9;local numerek = tonumber(string.match(msg.message, &quot;(%d+):&quot;))&#10;&#9;&#9;numerrozmowy = numerek&#10;&#9;&#9;if numerrozmowy &gt;= 0 and numerrozmowy &lt;= 100 then&#10;&#9;&#9;local wiado = (string.match(msg.message, &quot;:(.+)&quot;))&#10;&#9;&#9;if wiado == &quot;zakrec&quot; then&#10;&#10;if canroll then&#10;&#9;&#9;odpowiedz(rolldie())&#10;end&#10;&#9;&#9;end&#10;if wiado == &quot;podejdz&quot; then&#10;canroll = false&#10;zamknij = true&#10;while $posx ~= reqposclosedx or $posy ~= reqposclosedy do&#10;wait(100)&#10;end&#10;canroll = true&#10;&#10;end&#10;if wiado == &quot;odejdz&quot; then&#10;canroll = false&#10;zamknij = false&#10;while $posx ~= reqposopenedx or $posy ~= reqposopenedy do&#10;wait(100)&#10;end&#10;end&#10;&#9;&#9;end&#10;&#10;&#9;end&#10;&#9;end&#10;&#10;function odpowiedz(wiad)&#10;&#10;navsay(numerrozmowy..&quot;:&quot;..wiad)&#10;&#10;end&#10;&#10;&#10;init end&#10;auto(100)&#10;if $posx ~= reqposclosedx or $posy ~= reqposclosedy then&#10;canroll = false&#10;else&#10;canroll = true&#10;end" enabled="yes"/>
+            <PersistentScript name="OpenContainer" script="auto(1000)&#10;if windowcount() &lt; 1 then&#10;openitem($back.id,'back')&#10;end" enabled="yes"/>
+            <PersistentScript name="GetFrienName" script="init start&#10;function countnavchars()&#10;local ilecharow = 0&#10;&#10;foreach navchar navc do&#10;ilecharow = ilecharow + 1&#10;end&#10;return ilecharow&#10;end&#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;init end&#10;auto(1000)&#10;&#10;if (countnavchars() == 2) then&#10;foreach navchar n do&#10;if n.realname ~= $name then&#10;fname = n.realname&#10;end&#10;end&#10;end&#10;&#10;&#10;" enabled="yes"/>
+            <PersistentScript name="KeepPos" script="init start&#10;zamknij = false&#10;north = true&#10;&#10;function zobaczdp()&#10;zm = false&#10;&#10;local tile = gettile(cre.posx, cre.posy-1, cre.posz)&#10;for i=1, tile.itemcount do&#10;&#9;if tile.item[i].id == 3499 then&#10;&#9;zn = true&#10;&#9;nnn = true&#10;&#9;end&#10;end&#10;local tile = gettile(cre.posx, cre.posy+1, cre.posz)&#10;for i=1, tile.itemcount do&#10;&#9;if tile.item[i].id == 3497 then&#10;&#9;zn = true&#10;&#9;nnn = false&#10;&#9;end&#10;end&#10;&#10;&#10;if zn then&#10;north = nnn&#10;end&#10;end&#10;init end&#10;&#10;&#10;&#10;&#10;&#10;auto(1000)&#10;&#10;&#10;cre = getcreature(fname)&#10;&#10;zobaczdp()&#10;&#10;&#10;&#10;&#10;if north then&#10;reqposclosedx = cre.posx + 2&#10;reqposclosedy = cre.posy +1&#10;reqposopenedx = cre.posx + 2&#10;reqposopenedy = cre.posy +1&#10;else&#10;reqposclosedx = cre.posx + 2&#10;reqposclosedy = cre.posy - 1&#10;reqposopenedx = cre.posx + 2&#10;reqposopenedy = cre.posy - 1&#10;end&#10;&#10;znaleziono = false&#10;foreach creature c do&#10;if c.posx == cre.posx+2 and c.posy == cre.posy and c.posz == cre.posz then&#10;znaleziono = true&#10;end&#10;end&#10;if znaleziono then&#10;zamknij = true&#10;else&#10;zamknij = false&#10;end&#10;&#10;&#10;&#10;&#10;&#10;&#10;if zamknij then&#10;if $posx ~= reqposclosedx or $posy ~= reqposclosedy then&#10;moveto(reqposclosedx, reqposclosedy, $posz)&#10;end&#10;else&#10;if $posx ~= reqposopenedx or $posy ~= reqposopenedy then&#10;moveto(reqposopenedx, reqposopenedy, $posz)&#10;else&#10;if north then&#10;if $self.dir ~= 2 then&#10;turn(&quot;s&quot;)&#10;end&#10;else&#10;if $self.dir ~= 0 then&#10;turn(&quot;n&quot;)&#10;end&#10;end&#10;end&#10;&#10;end" enabled="yes"/>
+            <PersistentScript name="AntiIdle" script="init start&#10;&#9;local lastStand = $standtime&#10;&#9;local randTime = math.random(300000, 600000)&#10;init end&#10;&#10;auto(100)&#10;if not rolling then&#10;&#10;if $standtime &lt; lastStand then&#10;&#9;lastStand = $standtime&#10;end&#10;&#10;if $standtime - lastStand &gt; randTime then&#10;&#9;local dirs = {'n', 'e', 's', 'w'}&#10;&#9;&#10;&#9;-- Makes sure it's random and not the same we're facing right now&#10;&#9;table.remove(dirs, table.find(dirs, $self.dir))&#10;&#9;turn(dirs[math.random(1, 3)])&#10;&#9;waitping()&#10;&#10;&#9;lastStand = $standtime&#10;&#9;randTime = math.random(300000, 600000)&#10;end&#10;end" enabled="yes"/>
+        </PersistentScripts>
+    </Scripter>
+    <HUDs>
+        <HUDScripts/>
+    </HUDs>
+    <GeneralSettings>
+        <Input>
+            <MouseOption mouseMode="Simulate Mouse"/>
+            <MouseOption scrollMode="Use mouse wheel"/>
+            <MouseOption stuckCursorPolicy="If Cavebot on, Release Instantly"/>
+            <MouseOption moveSpeed="9"/>
+            <MouseOption clickWaitMin="100" clickWaitMax="150"/>
+            <KeyboardOption keyboardMode="Simulate Keyboard"/>
+            <KeyboardOption stuckCtrlShiftPolicy="If Cavebot on, Release Instantly"/>
+            <KeyboardOption typeWaitMin="110" typeWaitMax="140"/>
+            <KeyboardOption pressWaitMin="100" pressWaitMax="250"/>
+            <FocusOption focusPolicy="Don't auto-focus"/>
+            <FocusOption openMenuPolicy="Confirm if cavebotting"/>
+        </Input>
+    </GeneralSettings>
+    <Alerts disableSounds="no">
+        <alert name="Player On Screen" playSound="no" pauseBot="no" logout="no" safeList="&lt;SafeList&gt;&#10;"/>
+        <alert name="Player Attacking" playSound="no" pauseBot="no" logout="no" safeList="&lt;SafeList&gt;&#10;"/>
+        <alert name="Monster Attacking" playSound="no" pauseBot="no" logout="no" safeList="&lt;SafeList&gt;&#10;"/>
+        <alert name="Private Message" playSound="no" pauseBot="no" logout="no" safeList="&lt;SafeList&gt;&#10;"/>
+        <alert name="Default Message" playSound="no" pauseBot="no" logout="no" safeList="&lt;SafeList&gt;&#10;"/>
+        <alert name="GM Detected" playSound="no" pauseBot="no" logout="no"/>
+        <alert name="Disconnected" playSound="no" pauseBot="no" logout="no"/>
+        <alert name="Character Stuck" playSound="no" pauseBot="no" logout="no" standTime="30000"/>
+        <alert name="Health Below" playSound="no" pauseBot="no" logout="no" healthPercent="50"/>
+        <alert name="Mana Below" playSound="no" pauseBot="no" logout="no" manaPercent="50"/>
+        <alert name="Unjust Kill" playSound="no" pauseBot="no" logout="no"/>
+        <alert name="Enemies Online" playSound="no" pauseBot="no" logout="no" enemiesCount="50"/>
+    </Alerts>
+    <Cavebot enabled="no">
+        <Options>
+            <Option shovel="3457"/>
+            <Option rope="3003"/>
+            <Option machete="3308"/>
+            <Option pick="3456"/>
+            <Option nodeRange="4"/>
+            <Option pauseBotOnDeath="yes"/>
+            <Option refillAmmo="no" refillAmmoMin="30" refillAmmoMax="70"/>
+            <Option autoMount="no"/>
+            <Option fireAvoidanceMin="15" fireAvoidanceMax="20"/>
+            <Option energyAvoidanceMin="15" energyAvoidanceMax="20"/>
+            <Option poisonAvoidanceMin="15" poisonAvoidanceMax="20"/>
+            <Option walkThroughPlayers="yes"/>
+            <Option walkMethod="Walk With Arrow Keys"/>
+            <Option walkableItems=""/>
+            <Option mapWalkDistMin="20" mapWalkDistMax="30"/>
+            <Option userOptionsScript=""/>
+        </Options>
+        <SpecialAreas/>
+        <CavebotScripts/>
+        <WaypointSection name="Waypoints"/>
+    </Cavebot>
+    <Looting enabled="no">
+        <Options>
+            <Option range="10"/>
+            <Option moveItemsQuickly="yes"/>
+            <Option eatFoodFromCorpse="yes"/>
+            <Option openNextBP="no"/>
+            <Option openBPsAtLogin="no"/>
+            <Option valuableBodies="3000"/>
+            <Option ultraValuableBodies="50000"/>
+            <Option alertOnValuableBodies="no"/>
+            <Option openValuableBodiesOnly="no"/>
+            <Option openUltraValuableBodiesImmediately="no"/>
+            <Option policy="Smart Looting"/>
+            <LootingDestinations/>
+        </Options>
+        <LootingProfile name="LootList" isCurrentProfile="yes"/>
+    </Looting>
+    <Supplies>
+        <Options>
+            <Option defaultBackpack=""/>
+            <Option extraCashMin="1000" extraCashMax="2500"/>
+            <Option autoSwitchProfiles="no"/>
+        </Options>
+        <SupplyProfile name="SupplyList" vocation="Knight" level="8" isCurrentProfile="yes"/>
+    </Supplies>
+    <Targeting enabled="no" allowDiagonalMovement="no" autoSwitchProfiles="no" nonPvPMode="no">
+        <TargetingProfile name="TargetList" vocation="Knight" level="8" targetMustBeShootable="no" targetMustBeReachable="yes" isCurrentProfile="yes">
+            <Priorities>
+                <Priority health="20"/>
+                <Priority proximity="30"/>
+                <Priority danger="10"/>
+                <Priority random="0"/>
+                <Priority lure="30"/>
+                <Priority stick="2"/>
+            </Priorities>
+            <Creatures/>
+        </TargetingProfile>
+    </Targeting>
+    <OtherBots>
+        <HealingPaths/>
+        <TargetingPaths/>
+    </OtherBots>
+</WindbotSettings>
